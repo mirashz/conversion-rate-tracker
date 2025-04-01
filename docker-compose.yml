@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./apps/backend  # Path to the backend folder from docker-compose.yml
+      dockerfile: Dockerfile    # Optional if Dockerfile is named "Dockerfile"
+    ports:
+      - "3001:3001"
+      - "8081:8081"  # WebSocket port
+    environment:
+      - PORT=3001
+      - WS_PORT=8081
+      - CONTRACT_ADDRESS=0xD9A442856C234a39a81a089C06451EBAa4306a72
+      - WEB3_PROVIDER_URL=https://eth.llamarpc.com
+      - RATE_UPDATE_INTERVAL_MS=5000
+    restart: unless-stopped
+
+  frontend:
+    build: ./apps/frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_WS_SERVER_URL=ws://localhost:8081  # For local dev
+      - REACT_APP_MAX_DATA_POINTS=17280
+    depends_on:
+      - backend
